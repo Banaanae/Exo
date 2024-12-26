@@ -1,7 +1,5 @@
-﻿#NoEnv
-#MaxMem 4095
-#SingleInstance Off
-
+﻿#SingleInstance Off
+#Warn Unreachable, Off
 
 ; __________________________________________________________________________________________________
 ; Accept the main JS file from the command-line
@@ -17,84 +15,93 @@ if (!main) {
 	main := "demo.js"
 }
 global mainPath := ""
-Loop, %main%
-{
-	mainPath := A_LoopFileLongPath
-}
-if (!mainPath) {
+if (SubStr(main, 2, 1) != ":") ; Not absolute path
+	mainPath := rel2AbsPath(main)
+if !FileExist(mainPath)
 	end("The main file could not be located!`n" . main)
-}
+
 
 
 ; __________________________________________________________________________________________________
 ; Constants
-ENUM_VARIABLES=
+; TODO: Check whats actually needed (eg IsCompiled)
+; and whats number type
+ENUM_VARIABLES := "
 (
-A_AhkPath A_AhkVersion A_AppData A_AppDataCommon A_BatchLines A_CaretX A_CaretY
-A_ComputerName A_ControlDelay A_Cursor A_DD A_DDD A_DDDD A_DefaultMouseSpeed A_Desktop
-A_DesktopCommon A_DetectHiddenText A_DetectHiddenWindows A_EventInfo A_ExitReason A_FileEncoding
-A_FormatFloat A_FormatInteger A_Gui A_GuiControl A_GuiControlEvent A_GuiEvent A_GuiHeight A_GuiWidth
-A_GuiX A_GuiY A_Hour A_IconFile A_IconHidden A_IconNumber A_IconTip A_IPAddress1 A_IPAddress2
-A_IPAddress3 A_IPAddress4 A_Is64bitOS A_IsAdmin A_IsCompiled A_IsCritical A_IsPaused A_IsSuspended
-A_IsUnicode A_KeyDelay A_Language A_LastError A_MDay A_Min A_MM A_MMM A_MMMM A_Mon A_MouseDelay
-A_MSec A_MyDocuments A_Now A_NowUTC A_NumBatchLines A_OSType A_OSVersion A_PriorHotkey A_PriorKey
-A_ProgramFiles A_Programs A_ProgramsCommon A_PtrSize A_RegView A_ScreenDPI A_ScreenHeight
-A_ScreenWidth A_ScriptDir A_ScriptFullPath A_ScriptHwnd A_ScriptName A_Sec A_Space A_StartMenu
-A_StartMenuCommon A_Startup A_StartupCommon A_StringCaseSense A_Tab A_Temp A_ThisHotkey A_ThisMenu
-A_ThisMenuItem A_ThisMenuItemPos A_TickCount A_TimeIdle A_TimeIdlePhysical A_TimeSincePriorHotkey
-A_TimeSinceThisHotkey A_TitleMatchMode A_TitleMatchModeSpeed A_UserName A_WDay A_WinDelay A_WinDir
-A_WorkingDir A_YDay A_Year A_YWeek A_YYYY ClipboardAll ComSpec ProgramFiles A_Args
-)
+A_AhkPath A_AhkVersion A_AllowMainWindow A_AppData A_AppDataCommon A_Args A_Clipboard
+A_ComSpec A_ComputerName A_CoordModeCaret A_CoordModeMenu A_CoordModeHouse A_CoordModePixel
+A_CoordModeTooltip A_Cursor A_DD A_DDD A_DDDD A_Desktop A_DesktopCommon A_DetectHiddenText
+A_DetectHiddenWindows A_ENDCHAR A_EVENTINFO A_FileEncoding A_HotIf A_HotkeyInterval A_HotkeyModifierTimeout
+A_Hour A_IconFile A_IconNumber A_IconTip A_Index A_InitialWorkingDir A_IsCompiled
+A_KeyDuration A_KeyDurationPlay A_KeybdHookInstalled A_Language A_LastError A_LineFile
+A_LineNumber A_ListLines A_LoopField A_LoopFileName A_LoopReadLine A_LoopRegKey A_LoopRegName A_MM
+A_MMM A_MMMM A_MSEC A_MaxHotkeysPerInterval A_MenuMaskKey A_Min
+A_MouseHookInstalled A_MyDocuments A_Now A_NowUTC A_OSVersion A_PriorHotkey A_PriorKey
+A_ProgramFiles A_Programs A_ProgramsCommon A_RegView A_ScriptDir A_ScriptFullPath A_ScriptHwnd
+A_ScriptName A_Sec A_SendLevel A_SendMode A_Space A_StartMenu A_StartMenuCommon
+A_Startup A_StartupCommon A_StoreCapsLockMode A_Tab A_Temp A_ThisFunc A_ThisHotkey
+A_TimeIdleKeyboard A_TimeIdleMouse A_TitleMatchMode A_TitleMatchModeSpeed A_TrayMeny A_UserName
+A_WDay A_WinDir A_WorkingDir A_YDay A_YWeek A_YYYY
+)"
 
-ENUM_FUNCTIONS=
+;FOR GOTO IsSet
+;TODO Loop SysGetIPAddresses
+ENUM_FUNCTIONS := "
 (
-Abs ACos Asc ASin ATan BlockInput Ceil Chr Click ClipWait Control ControlClick ControlFocus
-ControlGet ControlGetFocus ControlGetPos ControlGetText ControlMove ControlSend ControlSendRaw
-ControlSetText CoordMode Cos Critical DetectHiddenText DetectHiddenWindows DllCall Drive DriveGet
-DriveSpaceFree EnvGet EnvSet EnvUpdate ExitApp Exp FileAppend FileCopy FileCopyDir FileCreateDir
-FileCreateShortcut FileDelete FileEncoding FileExist FileGetAttrib FileGetShortcut FileGetSize
-FileGetTime FileGetVersion FileMove FileMoveDir FileOpen FileRead FileReadLine FileRecycle FileRecycleEmpty
-FileRemoveDir FileSelectFile FileSelectFolder FileSetAttrib FileSetTime Floor FormatTime GetKeyName
-GetKeySC GetKeyState GetKeyVK GroupActivate GroupAdd GroupClose GroupDeactivate Gui GuiControl
-GuiControlGet Hotkey IL_Add IL_Create IL_Destroy ImageSearch IniDelete IniRead IniWrite Input
-InputBox InStr KeyHistory KeyWait ListHotkeys Ln Log Loop LTrim LV_Add LV_Delete LV_DeleteCol
-LV_GetCount LV_GetNext LV_GetText LV_Insert LV_InsertCol LV_Modify LV_ModifyCol LV_SetImageList Menu
-Mod MouseClick MouseClickDrag MouseGetPos MouseMove MsgBox OnExit OnMessage OutputDebug Pause
-PixelGetColor PixelSearch PostMessage Process Progress Random RegDelete RegExMatch RegExReplace
-RegRead RegWrite Reload Round RTrim Run RunAs RunWait SB_SetIcon SB_SetParts SB_SetText Send
-SendEvent SendInput SendLevel SendMessage SendMode SendPlay SendRaw SetBatchLines SetCapslockState
-SetControlDelay SetDefaultMouseSpeed SetFormat SetKeyDelay SetMouseDelay SetNumLockState SetRegView
-SetScrollLockState SetStoreCapslockMode SetTitleMatchMode SetWinDelay SetWorkingDir Shutdown Sin
-Sleep Sort SoundBeep SoundGet SoundGetWaveVolume SoundPlay SoundSet SoundSetWaveVolume SplashImage
-SplashTextOff SplashTextOn SplitPath Sqrt StatusBarGetText StatusBarWait StrGet StringCaseSense
-StringGetPos StringLeft StringLen StringLower StringMid StringReplace StringRight StringTrimLeft
-StringTrimRight StringUpper StrLen StrPut StrSplit SubStr Suspend SysGet Tan Thread ToolTip
-Transform TrayTip Trim TV_Add TV_Delete TV_Get TV_GetChild TV_GetCount TV_GetNext TV_GetParent
-TV_GetPrev TV_GetSelection TV_GetText TV_Modify TV_SetImageList UrlDownloadToFile WinActivate
-WinActivateBottom WinActive WinClose WinExist WinGet WinGetActiveStats WinGetActiveTitle WinGetClass
-WinGetPos WinGetText WinGetTitle WinHide WinKill WinMaximize WinMenuSelectItem WinMinimize
-WinMinimizeAll WinMinimizeAllUndo WinMove WinRestore WinSet WinSetTitle WinShow WinWait
-WinWaitActive WinWaitClose WinWaitNotActive Require
-)
+Abs ASin ACos ATan BlockInput Buffer CallbackCreate CallbackFree CaretGetPos 
+Ceil Chr Click ClipboardAll ClipWait ComCall ComObjActive ComObjArray ComObjConnect ComObject 
+ComObjFlags ComObjFromPtr ComObjGet ComObjQuery ComObjType ComObjValue ComValue ControlAddItem ControlChooseIndex 
+ControlChooseString ControlClick ControlDeleteItem ControlFindItem ControlFocus ControlGetChecked ControlGetChoice ControlGetClassNN ControlGetEnabled ControlGetFocus 
+ControlGetHwnd ControlGetIndex ControlGetItems ControlGetPos ControlGetStyle ControlGetExStyle ControlGetText ControlGetVisible ControlHide ControlHideDropDown 
+ControlMove ControlSend ControlSendText ControlSetChecked ControlSetEnabled ControlSetStyle ControlSetExStyle ControlSetText ControlShow ControlShowDropDown 
+CoordMode Cos Critical DateAdd DateDiff DetectHiddenText DetectHiddenWindows DirCopy DirCreate DirDelete 
+DirExist DirMove DirSelect DllCall Download DriveEject DriveGetCapacity DriveGetFileSystem DriveGetLabel DriveGetList 
+DriveGetSerial DriveGetSpaceFree DriveGetStatus DriveGetStatusCD DriveGetType DriveLock DriveRetract DriveSetLabel DriveUnlock Edit 
+EditGetCurrentCol EditGetCurrentLine EditGetLine EditGetLineCount EditGetSelectedText EditPaste EnvGet EnvSet Exit 
+ExitApp Exp FileAppend FileCopy FileCreateShortcut FileDelete FileEncoding FileExist FileInstall FileGetAttrib 
+FileGetShortcut FileGetSize FileGetTime FileGetVersion FileMove FileOpen FileRead FileRecycle FileRecycleEmpty FileSelect 
+FileSetAttrib FileSetTime Float Floor Format FormatTime GetKeyName GetKeyVK 
+GetKeySC GetKeyState GetMethod GroupActivate GroupAdd GroupClose GroupDeactivate Gui GuiCtrlFromHwnd 
+GuiFromHwnd HasBase HasMethod HasProp Hotkey Hotstring IL_Create IL_Add IL_Destroy 
+ImageSearch IniDelete IniRead IniWrite InputBox InputHook InstallKeybdHook InstallMouseHook InStr Integer 
+IsLabel IsObject IsSetRef KeyHistory KeyWait ListHotkeys ListLines ListVars ListViewGetContent 
+LoadPicture Log Ln Map Max MenuBar Menu MenuFromHandle MenuSelect 
+Min Mod MonitorGet MonitorGetCount MonitorGetName MonitorGetPrimary MonitorGetWorkArea MouseClick MouseClickDrag MouseGetPos 
+MouseMove MsgBox Number NumGet NumPut ObjAddRef ObjRelease ObjBindMethod ObjHasOwnProp ObjOwnProps 
+ObjGetBase ObjGetCapacity ObjGetDataPtr ObjGetDataSize ObjOwnPropCount ObjSetBase ObjSetCapacity ObjSetDataPtr OnClipboardChange OnError 
+OnExit OnMessage Ord OutputDebug Pause Persistent PixelGetColor PixelSearch PostMessage ProcessClose 
+ProcessExist ProcessGetName ProcessGetParent ProcessGetPath ProcessSetPriority ProcessWait ProcessWaitClose Random RegExMatch RegExReplace 
+RegCreateKey RegDelete RegDeleteKey RegRead RegWrite Reload Round Run RunAs 
+RunWait Send SendText SendInput SendPlay SendEvent SendLevel SendMessage SendMode SetCapsLockState 
+SetControlDelay SetDefaultMouseSpeed SetKeyDelay SetMouseDelay SetNumLockState SetScrollLockState SetRegView SetStoreCapsLockMode SetTimer SetTitleMatchMode 
+SetWinDelay SetWorkingDir Shutdown Sin Sleep Sort SoundBeep SoundGetInterface SoundGetMute SoundGetName 
+SoundGetVolume SoundPlay SoundSetMute SoundSetVolume SplitPath Sqrt StatusBarGetText StatusBarWait StrCompare StrGet 
+String StrLen StrLower StrPtr StrPut StrReplace StrSplit StrTitle StrUpper SubStr 
+Suspend SysGet SysGetIPAddresses Tan Thread Throw ToolTip TraySetIcon TrayTip 
+Trim LTrim RTrim Type VarSetStrCapacity VerCompare WinActivate WinActivateBottom 
+WinActive WinClose WinExist WinGetAlwaysOnTop WinGetClass WinGetClientPos WinGetControls WinGetControlsHwnd WinGetCount WinGetEnabled 
+WinGetID WinGetIDLast WinGetList WinGetMinMax WinGetPID WinGetPos WinGetProcessName WinGetProcessPath WinGetStyle WinGetExStyle 
+WinGetText WinGetTitle WinGetTransColor WinGetTransparent WinHide WinKill WinMaximize WinMinimize WinMinimizeAll WinMinimizeAllUndo 
+WinMove WinMoveBottom WinMoveTop WinRedraw WinRestore WinSetAlwaysOnTop WinSetEnabled WinSetRegion WinSetStyle WinSetExStyle 
+WinSetTitle WinSetTransColor WinSetTransparent WinShow WinWait WinWaitActive WinWaitNotActive WinWaitClose Require
+)"
 
-ENUM_NUMBER_TYPES =
+ENUM_NUMBER_TYPES := "
 (
-A_ControlDelay,A_DefaultMouseSpeed,A_GuiHeight,A_GuiWidth,A_GuiX,A_GuiY,A_IconHidden,A_Is64bitOS,
-A_IsAdmin,A_IsCritical,A_IsPaused,A_IsSuspended,A_KeyDelay,A_MouseDelay,A_PtrSize,A_ScreenDPI,
-A_ScreenHeight,A_ScreenWidth,A_TickCount,A_TimeIdle,A_TimeIdlePhysical,A_TimeSincePriorHotkey,
-A_TimeSinceThisHotkey,A_WinDelay
-)
+A_ControlDelay,A_DefaultMouseSpeed,A_IconHidden,A_Is64bitOS,A_IsAdmin,A_IsCritical,A_IsPaused,
+A_IsSuspended,A_KeyDelay,A_KeyDelayPlay,A_MouseDelay,A_MouseDelayPlay,A_PtrSize,A_ScreenDPI,A_ScreenHeight,A_ScreenWidth,A_TickCount,
+A_TimeIdle,A_TimeIdlePhysical,A_TimeSincePriorHotkey,A_TimeSinceThisHotkey,A_WinDelay
+)"
 
-ENUM_REG_NAMES =
+ENUM_REG_NAMES := "
 (
 HKEY_LOCAL_MACHINE,HKLM
 HKEY_USERS,HKU
 HKEY_CURRENT_USER,HKCU
 HKEY_CLASSES_ROOT,HKCR
 HKEY_CURRENT_CONFIG,HKCC
-)
+)"
 
-BUILTIN_LABELS := "GuiClose GuiContextMenu GuiDropFiles GuiEscape GuiSize OnClipboardChange"
 WIDTH := 800
 HEIGHT := 600
 
@@ -104,7 +111,6 @@ global enumVariables := enum(ENUM_VARIABLES)
 global enumFunctions := enum(ENUM_FUNCTIONS)
 global enumNumberTypes := enum(ENUM_NUMBER_TYPES)
 global enumRegNames := enum(ENUM_REG_NAMES)
-global builtinLabels := enum(BUILTIN_LABELS)
 global closures := {}	; a map that links a string identifier to a js native closure. Used by "trigger()"
 global JS ; a JavaScript helper object. Used extensively by the API functions.
 global window ; a shortcut to wb.document.parentWindow. Used by "_Require()".
@@ -113,10 +119,10 @@ global mainDir
 
 ; __________________________________________________________________________________________________
 ; Set working dir
-SplitPath, mainPath, mainFilename, mainDir, mainExt, mainSeed
-SetWorkingDir %mainDir%  ; From now on, all relative paths are based on the JS location
+SplitPath(mainPath, &mainFilename, &mainDir, &mainExt, &mainSeed)
+SetWorkingDir(mainDir)  ; From now on, all relative paths are based on the JS location
 mainDirURI := "file:///" . RegExReplace(mainDir, "\\", "/") . "/"
-OnExit, LabelOnExit
+OnExit(LabelOnExit)
 
 
 ; __________________________________________________________________________________________________
@@ -130,25 +136,30 @@ OnExit, LabelOnExit
 ; Further reading:
 ; 	● http://ahkscript.org/boards/viewtopic.php?t=5714&p=33477#p33477
 ; 	● http://ahkscript.org/boards/viewtopic.php?f=14&t=5778
-Gui, Add, ActiveX, w%WIDTH% h%HEIGHT% x0 y0 vwb, Shell.Explorer
+ExoGui := Gui()
+
+ExoGui.OnEvent('Close', GuiClose)
+
+ogcActiveXwb := ExoGui.Add("ActiveX", "w" . WIDTH . " h" . HEIGHT . " x0 y0 vwb", "Shell.Explorer")
+wb := ogcActiveXwb.Value
 wb.Navigate("about:<!DOCTYPE html><meta http-equiv='X-UA-Compatible' content='IE=edge'>")
 while wb.readyState < 4
-	Sleep 10
+	Sleep(10)
 wb.document.open() ; important
 document := wb.document ; shortcut
 window := document.parentWindow ; shortcut
-html=
+html := 
 (
-<!DOCTYPE html>
+"<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
 		<meta charset='utf-8'>
-		<base href='%mainDirURI%'>
+		<base href='" mainDirURI "'>
 	</head>
 	<body>
 	</body>
-</html>
+</html>"
 )
 document.write(html)
 
@@ -161,9 +172,9 @@ if (false) { ; TODO: implement the "#UseExoScope" directive
 } else {
 	scope := "window"
 }
-exoHelper=
+exoHelper .= 
 (
-	var __ExoHelper = {
+"	var __ExoHelper = {
 		Object: function() {
 			var obj = {};
 			for (var i = 0; i < arguments.length; i += 2) {
@@ -177,17 +188,18 @@ exoHelper=
 		
 		
 		registerFunction: function(name, func) {
-			%scope%[name] = func;
+			" scope "[name] = func;
 		},
 		registerGetter: function(name, func){
-			Object.defineProperty(%scope%, name, {
+			Object.defineProperty(" scope ", name, {
 				get: function() {
+					alert(func.Name + '`\n' + name);
 					return func(name);
 				}
 			});
 		},
 		registerAccessor: function(name, func){
-			Object.defineProperty(%scope%, name, {
+			Object.defineProperty(" scope ", name, {
 				get: function(){
 					return func();
 				},
@@ -196,7 +208,7 @@ exoHelper=
 				}
 			});
 		}
-	};
+	};"
 )
 ; "eval" doesn't work correctly in IE8 at this point.
 ; If it did, we would have used an anonymous helper object and avoided polluting the global scope.
@@ -206,24 +218,24 @@ JS := window.__ExoHelper
 
 ; __________________________________________________________________________________________________
 ; Register the API
-getBuiltInVarReference := Func("getBuiltInVar")
-for key in enumVariables {
-	apiFunction := Func("_" . key)
-	if (!apiFunction) { ; found no custom API function
+getBuiltInVarReference := getBuiltInVar
+for key in StrSplit(RegExReplace(ENUM_VARIABLES, "\n", " "), " ") {
+	apiFunction := "_" . key
+	if IsSet(%apiFunction%)
+		apiFunction := %apiFunction%
+	else  ; found no custom API function
 		apiFunction := getBuiltInVarReference ; this must be a normal built-in variable
-	}
 	JS.registerGetter(key, apiFunction)
 }
-for key in enumFunctions {
-	apiFunction := Func("_" . key)
-	if (!apiFunction) { ; found no custom API function
-		apiFunction := Func(key) ; this must be a normal built-in function
-	}
+for key in StrSplit(RegExReplace(ENUM_FUNCTIONS, "\n", " "), " ") {
+	apiFunction := "_" . key
+	if IsSet(%apiFunction%)
+		apiFunction := %apiFunction%
+	else ; found no custom API function
+		apiFunction := %key% ; this must be a normal built-in function
 	JS.registerFunction(key, apiFunction)
 }
-JS.registerAccessor("Clipboard", Func("_Clipboard")) ; exception: Clipboard is read-write
-JS.registerAccessor("ErrorLevel", Func("_ErrorLevel")) ; exception: ErrorLevel is read-write
-
+JS.registerAccessor("Clipboard", _A_Clipboard) ; exception: Clipboard is read-write
 
 ; __________________________________________________________________________________________________
 ; Evaluate the main JS.
@@ -236,26 +248,21 @@ JS.registerAccessor("ErrorLevel", Func("_ErrorLevel")) ; exception: ErrorLevel i
 ;			Works ok and doesn't dirty the page source, but you have no script URL (mostly harmless).
 ;		4) execScript(...)
 ;			Same as eval, plus a bit safer for IE8. This is the chosen method.
-FileRead, mainContent, %mainPath%
-window.execScript(mainContent)
-document.close()	; allows the triggering of window.onload
-
-
-; __________________________________________________________________________________________________
-; Register any possible built-in functions equivalent to the built-in labels
-for key, val in builtinLabels {
-	if (window.hasOwnProperty(key) != 0) {
-		closures[key] := window[key]
-	}
+mainContent := FileRead(mainPath)
+try {
+	window.execScript(mainContent)
+} catch {
+	end("There was an error running the script")
 }
+document.close()	; allows the triggering of window.onload
 
 
 ; __________________________________________________________________________________________________
 ; Finish the Auto-execute Section
 trigger("OnClipboardChange")
-OnMessage(0x100, "WB_onKey", 2) ; support for key down
-OnMessage(0x101, "WB_onKey", 2) ; support for key up
-Gui, Show, w%WIDTH% h%HEIGHT%
+OnMessage(0x100, WB_onKey, 2) ; support for key down
+OnMessage(0x101, WB_onKey, 2) ; support for key up
+ExoGui.Show("w" WIDTH " h" HEIGHT)
 return
 
 
@@ -271,10 +278,10 @@ return
  *
  */
 getBuiltInVar(name){
-	if (enumNumberTypes.HasKey(name)) {
-		return (%name%)+0
+	if (enumNumberTypes.HasOwnProp(name)) {
+		return %name%+0
 	} else {
-		return (%name%)
+		return %name%
 	}
 }
 
@@ -296,11 +303,12 @@ getArgs(){
  */
 Args( CmdLine := "", Skip := 0 ) {    
 	Local pArgs := 0, nArgs := 0, A := []
-	pArgs := DllCall( "Shell32\CommandLineToArgvW", "WStr",CmdLine, "PtrP",nArgs, "Ptr" )
-	Loop % ( nArgs )
+	pArgs := DllCall("Shell32\CommandLineToArgvW", "WStr", CmdLine, "PtrP", &nArgs, "Ptr")
+	Loop ( nArgs )
 		If ( A_Index > Skip )
-			A[ A_Index - Skip ] := StrGet( NumGet( ( A_Index - 1 ) * A_PtrSize + pArgs ), "UTF-16" )  
-	Return A,   A[0] := nArgs - Skip,   DllCall( "LocalFree", "Ptr", pArgs )  
+			A.Push(StrGet( NumGet(( A_Index - 1 ) * A_PtrSize + pArgs, "UPtr"), "UTF-16")) 
+	A.InsertAt(1, nArgs - Skip)
+	Return A
 }
 
 
@@ -308,8 +316,8 @@ Args( CmdLine := "", Skip := 0 ) {
  * 
  */
 trigger(key, args*){
-	closure := closures[key]
-	if (closure) {
+	try closure := closures[key]
+	if IsSet(closure) {
 		return closure.call(0,args*)
 	}
 }
@@ -321,11 +329,24 @@ trigger(key, args*){
 enum(blob){
 	blob := RegExReplace(blob, "\s+", ",")
 	parts := StrSplit(blob, ",")
-	output := {}
+	output := Map()
 	for key, val in parts {
 		output[val] := 1
 	}
 	return output
+}
+
+/**
+ * Converts relative path to absolute
+ * TODO: Support when ahk file is not in terminal dir
+ */
+rel2AbsPath(lPath) {
+    Path := A_WorkingDir "\" lPath
+    c := 1
+    While (c != 0)
+        Path := RegExReplace(Path, "\w+\\\.\.\\", "", &c)
+    Path := RegExReplace(Path, "\\\.\\", "\")
+	return Path
 }
 
 
@@ -334,12 +355,12 @@ enum(blob){
  */
 trace(s){
 	s := serialize(s,0)
-	MsgBox, 262144,,%s% ; Always on top
+	MsgBox(s,, 262144) ; Always on top
 }
 serialize(obj,indent){
 	if (IsObject(obj)) {
 		prefix := ""
-		Loop,%indent%
+		Loop indent
 		{
 			prefix .= "`t"
 		}
@@ -361,7 +382,7 @@ serialize(obj,indent){
  */
 end(message){
 	message .= "`nThe application will now exit."
-	MsgBox % message
+	MsgBox message
 	ExitApp
 }
 
@@ -374,43 +395,31 @@ end(message){
 /**
  * Built-in label.
  */
-GuiClose:
+GuiClose(*) {
 	if (trigger("GuiClose") == 0) {
 		return
 	}
 	ExitApp
-return
-
-
-/**
- * Built-in labels.
- */
-GuiContextMenu:
-GuiDropFiles:
-GuiEscape:
-GuiSize:
-OnClipboardChange:
-	trigger(A_ThisLabel)
-return
+}
 
 
 /**
  * "OnExit()" redirects here.
  */
-LabelOnExit:
+LabelOnExit(*) {
 	if (trigger("OnExit") == 0) {
 		return
 	}
 	ExitApp
-return
+}
 
 
 /**
  * "Hotkey()" redirects here.
  */
-LabelHotkey:
+LabelHotkey() {
 	trigger("Hotkey" . A_ThisHotkey)
-return
+}
 
 
 /**
@@ -424,6 +433,6 @@ OnMessageClosure(wParam, lParam, msg, hwnd){
 ;###################################################################################################
 ;############################################   A P I   ############################################
 ;###################################################################################################
-#Include %A_ScriptDir%\lib\FileObject.ahk
-#Include %A_ScriptDir%\lib\WB_onKey.ahk
-#Include %A_ScriptDir%\lib\API.ahk
+#Include <FileObject>
+#Include <WB_onKey>
+#Include <API>
