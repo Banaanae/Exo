@@ -45,7 +45,7 @@ A_WDay A_WinDir A_WorkingDir A_YDay A_YWeek A_YYYY
 )"
 
 ;FOR GOTO IsSet
-;TODO Loop SysGetIPAddresses
+;TODO SysGetIPAddresses
 ENUM_FUNCTIONS := "
 (
 Abs ASin ACos ATan BlockInput Buffer CallbackCreate CallbackFree CaretGetPos 
@@ -65,7 +65,7 @@ GetKeySC GetKeyState GetMethod GroupActivate GroupAdd GroupClose GroupDeactivate
 GuiFromHwnd HasBase HasMethod HasProp Hotkey Hotstring IL_Create IL_Add IL_Destroy 
 ImageSearch IniDelete IniRead IniWrite InputBox InputHook InstallKeybdHook InstallMouseHook InStr Integer 
 IsLabel IsObject IsSetRef KeyHistory KeyWait ListHotkeys ListLines ListVars ListViewGetContent 
-LoadPicture Log Ln Map Max MenuBar Menu MenuFromHandle MenuSelect 
+LoadPicture Log Ln Loop Map Max MenuBar Menu MenuFromHandle MenuSelect 
 Min Mod MonitorGet MonitorGetCount MonitorGetName MonitorGetPrimary MonitorGetWorkArea MouseClick MouseClickDrag MouseGetPos 
 MouseMove MsgBox Number NumGet NumPut ObjAddRef ObjRelease ObjBindMethod ObjHasOwnProp ObjOwnProps 
 ObjGetBase ObjGetCapacity ObjGetDataPtr ObjGetDataSize ObjOwnPropCount ObjSetBase ObjSetCapacity ObjSetDataPtr OnClipboardChange OnError 
