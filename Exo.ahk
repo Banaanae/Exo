@@ -219,7 +219,7 @@ JS := window.__ExoHelper
 ; __________________________________________________________________________________________________
 ; Register the API
 getBuiltInVarReference := getBuiltInVar
-for key in StrSplit(RegExReplace(ENUM_VARIABLES, "\n", " "), " ") {
+for key in enumVariables {
 	apiFunction := "_" . key
 	if IsSet(%apiFunction%)
 		apiFunction := %apiFunction%
@@ -227,7 +227,7 @@ for key in StrSplit(RegExReplace(ENUM_VARIABLES, "\n", " "), " ") {
 		apiFunction := getBuiltInVarReference ; this must be a normal built-in variable
 	JS.registerGetter(key, apiFunction)
 }
-for key in StrSplit(RegExReplace(ENUM_FUNCTIONS, "\n", " "), " ") {
+for key in enumFunctions {
 	apiFunction := "_" . key
 	if IsSet(%apiFunction%)
 		apiFunction := %apiFunction%
@@ -329,9 +329,9 @@ trigger(key, args*){
 enum(blob){
 	blob := RegExReplace(blob, "\s+", ",")
 	parts := StrSplit(blob, ",")
-	output := Map()
-	for key, val in parts {
-		output[val] := 1
+	output := []
+	for , val in parts {
+		output.Push(val)
 	}
 	return output
 }
