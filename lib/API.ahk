@@ -185,7 +185,9 @@ _Loop(Param1,Param2:="",Param3:=""){
                 ,"Key", A_LoopRegKey
                 ,"TimeModified", A_LoopRegTimeModified))
 		}
-	} else if (Param1 = "Files") {
+	} else if (Param1 = "Files" or Param1 != "") {
+		if (Param1 != "Files")
+			Param3 := Param2, Param2 := Param1
 		Loop Files, Param2, Param3
         {
 	        output.push(JS.Object("Name", A_LoopFileName
@@ -203,10 +205,7 @@ _Loop(Param1,Param2:="",Param3:=""){
                 ,"SizeMB", A_LoopFileSizeMB+0))
         }
 	} else { ; Error handling
-		If Param1 = ""
-			end("The Normal-Loop has been superseded by JavaScript's while or for loops.")
-		else
-			end("Unknown loop type: " Param1)
+		end("The Normal-Loop has been superseded by JavaScript's while or for loops.")
 	}
 	return output
 }
