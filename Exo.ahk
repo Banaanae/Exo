@@ -193,7 +193,6 @@ exoHelper .=
 		registerGetter: function(name, func){
 			Object.defineProperty(" scope ", name, {
 				get: function() {
-					alert(func.Name + '`\n' + name);
 					return func(name);
 				}
 			});
