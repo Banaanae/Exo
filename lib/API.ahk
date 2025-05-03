@@ -416,6 +416,10 @@ _MonitorGet(N:=1) {
 	ActualN := MonitorGet(N, &Left, &Top, &Right, &Bottom)
 	return JS.Object("ActualN", ActualN, "Left",Left, "Top",Top, "Right",Right, "Bottom",Bottom)
 }
+_MonitorGetWorkArea(N:=1) {
+	ActualN := MonitorGetWorkArea(N, &Left, &Top, &Right, &Bottom)
+	return JS.Object("ActualN", ActualN, "Left",Left, "Top",Top, "Right",Right, "Bottom",Bottom)
+}
 
 
 /**
