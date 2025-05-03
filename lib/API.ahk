@@ -230,12 +230,13 @@ _MouseGetPos(Flag:=""){
  */
 _MsgBox(Param1:="__Undefined", Title:="__Undefined", Text:=""){
 	if (Param1 == "__Undefined") {
-		MsgBox
+		res := MsgBox
 	} else if (Title == "__Undefined") {
-		MsgBox(Param1)
+		res := MsgBox(Param1)
 	} else {
-		MsgBox(Param1,Title,Text)
+		res := MsgBox(Param1,Title,Text)
 	}
+	return res
 }
 
 
