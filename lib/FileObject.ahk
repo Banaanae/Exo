@@ -11,7 +11,7 @@ class FileObject
 
 	__Get(key, args*)
 	{
-		if (key ~= "i)^__Handle|AtEOF|Encoding|Length|Pos(ition)?$")
+		if (key ~= "i)^Handle|AtEOF|Encoding|Length|Pos$")
 			return (this.__Ptr)[key, args*]
 	}
 
