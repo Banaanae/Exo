@@ -86,7 +86,7 @@ WinMove WinMoveBottom WinMoveTop WinRedraw WinRestore WinSetAlwaysOnTop WinSetEn
 WinSetTitle WinSetTransColor WinSetTransparent WinShow WinWait WinWaitActive WinWaitNotActive WinWaitClose Require
 )"
 
-if VerCompare(A_AhkVersion, '>2.0')
+if VerCompare(A_AhkVersion, '>=2.1')
 	ENUM_FUNCTIONS .= "`r`nObjGetDataPtr ObjGetDataSize ObjSetDataPtr Throw WinGetAlwaysOnTop WinGetEnabled"
 
 ENUM_NUMBER_TYPES := "
